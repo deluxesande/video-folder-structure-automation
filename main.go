@@ -4,15 +4,43 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/fatih/color"
 )
 
 const VIDEOS_PATH = "C:/Users/delse/Videos/"
-const TEMPLATE_PATH = VIDEOS_PATH + "Video Template/"
+
+func createSubFolders(basePath string, subFolders map[string][]string) {
+	for folder, nested := range subFolders {
+		subFolderPath := basePath + "/" + folder
+
+		err := os.MkdirAll(subFolderPath, os.ModePerm)
+
+		if err != nil {
+			color.Red("Error creating subfolder %s: %v", folder, err)
+		} else {
+			color.Green("Created subfolder: %s", subFolderPath)
+		}
+
+		// Create nested subfolders if any
+		for _, n := range nested {
+			nestedPath := subFolderPath + "/" + n
+
+			err := os.MkdirAll(nestedPath, os.ModePerm)
+
+			if err != nil {
+				color.Red("Error creating nested subfolder %s: %v", n, err)
+			} else {
+				color.Green("Created nested subfolder: %s", nestedPath)
+			}
+		}
+	}
+}
 
 func createFolderStructure(projectName string) {
-	var path = projectName
+	path := VIDEOS_PATH + projectName
+
 	// Check if the folder already exists
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		color.Red("Folder already exists!")
@@ -27,7 +55,21 @@ func createFolderStructure(projectName string) {
 		return
 	}
 
-	fmt.Println("Folder structure created at:", path)
+	fmt.Println("Folder created at:", path)
+
+	// Create 4 subdirectories
+	subFolders := map[string][]string{
+		"00 Project Info":  {},
+		"01 Assets":        {"01 FOOTAGE", "02 ASSETS", "03 SFX", "04 MUSIC", "05 VFX", "06 GRAPHICS", "07 IMAGES"},
+		"02 Project Files": {},
+		"03 Exports":       {"Drafts", "Final"},
+	}
+	createSubFolders(path, subFolders)
+}
+
+func appendDateToProjectName(projectName string) string {
+	currentDate := time.Now().Format("2 January 2006")
+	return projectName + " - " + currentDate
 }
 
 func main() {
@@ -46,5 +88,5 @@ func main() {
 		color.Yellow("This tool will help you create a folder structure for your video projects.")
 	}
 
-	createFolderStructure(*projectName)
+	createFolderStructure(appendDateToProjectName(*projectName))
 }
