@@ -53,7 +53,7 @@ A new folder will be created in your Videos directory with the specified structu
 ### Windows
 
 ```powershell
-$script = "$env:TEMP\video_structure_install.ps1"; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/deluxesande/video-folder-structure-automation/main/install/install.ps1' -OutFile $script; & $script; Remove-Item $script
+$script = "$env:TEMP\video_structure_install.ps1"; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/deluxesande/video-folder-structure-automation/main/install.ps1' -OutFile $script; & $script; Remove-Item $script
 ```
 
 This script will:
