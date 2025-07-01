@@ -1,37 +1,50 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
-// ListFolders lists all folders in the given directory path.
-func listFolders(path string) ([]string, error) {
-	entries, err := os.ReadDir(path)
+const VIDEOS_PATH = "C:/Users/delse/Videos/"
+const TEMPLATE_PATH = VIDEOS_PATH + "Video Template/"
 
-	if err != nil {
-		return nil, err
-	}
-
-	var folders []string
-
-	for _, entry := range entries {
-		if entry.IsDir() {
-			folders = append(folders, entry.Name())
-		}
-	}
-
-	return folders, nil
-}
-
-func main() {
-	folders, err := listFolders("C:/Users/delse/Videos/Video Template")
-
-	if err != nil {
+func createFolderStructure(projectName string) {
+	var path = projectName
+	// Check if the folder already exists
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		color.Red("Folder already exists!")
 		return
 	}
 
-	for _, folder := range folders {
-		fmt.Println(folder)
+	// Create the folder structure
+	err := os.MkdirAll(path, os.ModePerm)
+
+	if err != nil {
+		fmt.Println("Error creating folder structure:", err)
+		return
 	}
+
+	fmt.Println("Folder structure created at:", path)
+}
+
+func main() {
+	projectName := flag.String("name", "", "Project name for the folder structure")
+	help := flag.Bool("help", false, "Display help information")
+
+	flag.Parse()
+
+	if *projectName == "" {
+		fmt.Print("Please provide a project name using -name flag.\n")
+		return
+	}
+
+	if *help {
+		color.Green("Welcome to the Video Template Creator!")
+		color.Yellow("This tool will help you create a folder structure for your video projects.")
+	}
+
+	createFolderStructure(*projectName)
 }
